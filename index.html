@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Немецкий язык: Die Farben | Интерактивные задания</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* чтобы при перетаскивании не выделялся текст */
+        }
+
+        body {
+            background-color: #FFF8EC;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            color: #2C2C2C;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1E3A5F;
+            border-left: 6px solid #E5A93D;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subhead {
+            color: #2C2C2C;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #E5A93D;
+            display: inline-block;
+            padding-bottom: 6px;
+        }
+
+        .task-section {
+            background: rgba(255, 248, 236, 0.7);
+            border-radius: 28px;
+            padding: 1.6rem 1.8rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(229, 169, 61, 0.25);
+            transition: box-shadow 0.2s;
+        }
+
+        .task-section:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .task-title {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #1E3A5F;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .task-title span {
+            background: #E5A93D;
+            color: #1E3A5F;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 60px;
+        }
+
+        .task-desc {
+            color: #4a5568;
+            margin-bottom: 1.6rem;
+            font-size: 0.95rem;
+            border-left: 3px solid #C44B3C;
+            padding-left: 14px;
+            background: #FFF8EC;
+        }
+
+        /* Drag and drop стили для задания 1 */
+        .drag-drop-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: space-between;
+        }
+
+        .drag-column {
+            flex: 1;
+            min-width: 200px;
+            background: #FFF8EC;
+            border-radius: 24px;
+            padding: 1rem;
+        }
+
+        .drag-column h3 {
+            color: #1E3A5F;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .drag-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drag-word {
+            background: #E5A93D;
+            color: #1E3A5F;
+            padding: 12px 16px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: grab;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .drag-word:active {
+            cursor: grabbing;
+        }
+        .drag-word.dragging {
+            opacity: 0.4;
+        }
+
+        .drop-zone {
+            background: #FFF0DF;
+            border: 2px dashed #E5A93D;
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 1rem;
+            color: #2C2C2C;
+            transition: background 0.2s;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .drop-zone.drag-over {
+            background: #E5A93D40;
+            border-color: #C44B3C;
+        }
+        .drop-zone span:first-child {
+            font-weight: 600;
+            background: #1E3A5F;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+        }
+        .drop-value {
+            background: white;
+            padding: 5px 12px;
+            border-radius: 40px;
+            flex: 1;
+            text-align: left;
+            color: #1E3A5F;
+            font-weight: 500;
+        }
+        .reset-drag-btn {
+            background: #C44B3C;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* общие кнопки */
+        .btn-answer {
+            background-color: #E5A93D;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1E3A5F;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 16px;
+            margin-right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-answer:hover {
+            background-color: #C44B3C;
+            color: white;
+            transform: translateY(-1px);
+        }
+        .answer-box {
+            display: none;
+            background: #FFF8EC;
+            border-left: 4px solid #C44B3C;
+            padding: 0.8rem 1rem;
+            margin-top: 0.9rem;
+            border-radius: 16px;
+            font-size: 1rem;
+            color: #2C2C2C;
+            font-weight: 500;
+        }
+        .german-word {
+            font-weight: 600;
+            color: #1E3A5F;
+            background: #FFF0DF;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        select {
+            background: white;
+            border: 1px solid #E5A93D;
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            color: #1E3A5F;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 12px;
+        }
+        .input-field {
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 1px solid #E5A93D;
+            background: white;
+            font-size: 0.95rem;
+            width: 180px;
+            margin-left: 12px;
+        }
+        .sentence-item {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #E5A93D40;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 750px) {
+            .drag-drop-container { flex-direction: column; }
+            .drag-column { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎨 Die Farben <span style="font-size:1.2rem;">(цвета)</span></h1>
+    <div class="subhead">Интерактивные задания — перетаскивай, выбирай, переводи</div>
+
+    <!-- ЗАДАНИЕ 1: Сопоставь слово и перевод (Drag & Drop) -->
+    <div class="task-section">
+        <div class="task-title"><span>1</span> Сопоставь немецкое слово с переводом (перетащи)</div>
+        <div class="task-desc">Перетащи цвет из левой колонки в правую к нужному переводу. Можно сбросить всё кнопкой ниже.</div>
+        
+        <div class="drag-drop-container">
+            <!-- Левая колонка: перетаскиваемые слова -->
+            <div class="drag-column">
+                <h3>🇩🇪 Deutsch</h3>
+                <div class="drag-items" id="drag-items">
+                    <div class="drag-word" draggable="true" data-color="rot">rot</div>
+                    <div class="drag-word" draggable="true" data-color="blau">blau</div>
+                    <div class="drag-word" draggable="true" data-color="grün">grün</div>
+                    <div class="drag-word" draggable="true" data-color="schwarz">schwarz</div>
+                    <div class="drag-word" draggable="true" data-color="gelb">gelb</div>
+                </div>
+            </div>
+            <!-- Правая колонка: зоны сброса -->
+            <div class="drag-column">
+                <h3>🇷🇺 Русский</h3>
+                <div id="drop-zones">
+                    <div class="drop-zone" data-translate="зелёный"><span>1) зелёный</span><span class="drop-value" id="drop-grün">—</span></div>
+                    <div class="drop-zone" data-translate="чёрный"><span>2) чёрный</span><span class="drop-value" id="drop-schwarz">—</span></div>
+                    <div class="drop-zone" data-translate="красный"><span>3) красный</span><span class="drop-value" id="drop-rot">—</span></div>
+                    <div class="drop-zone" data-translate="жёлтый"><span>4) жёлтый</span><span class="drop-value" id="drop-gelb">—</span></div>
+                    <div class="drop-zone" data-translate="синий"><span>5) синий</span><span class="drop-value" id="drop-blau">—</span></div>
+                </div>
+                <button class="reset-drag-btn" id="resetDragBtn">⟳ Сбросить все сопоставления</button>
+                <button class="btn-answer" id="showDragAnswers">📖 Показать правильные пары</button>
+                <div id="dragAnswersBox" class="answer-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЗАДАНИЕ 2: Вставь подходящий цвет (выпадающие списки) -->
+    <div class="task-section">
+        <div class="task-title"><span>2</span> Вставь подходящий цвет (по-немецки)</div>
+        <div class="task-desc">Выбери правильный цвет из выпадающего списка. Нажми на кнопку, чтобы проверить ответы.</div>
+        <div id="sentences2">
+            <div class="sentence-item">a) Der Himmel ist 
+                <select id="select2a">
+                    <option value="">-- выбери --</option>
+                    <option value="rot">rot</option><option value="blau">blau</option><option value="grün">grün</option>
+                    <option value="schwarz">schwarz</option><option value="gelb">gelb</option><option value="weiß">weiß</option>
+                </select>
+            </div>
+            <div class="sentence-item">b) Das Gras ist 
+                <select id="select2b">
+                    <option value="">-- выбери --</option>
+                    <option value="rot">rot</option><option value="blau">blau</option><option value="grün">grün</option>
+                    <option value="schwarz">schwarz</option><option value="gelb">gelb</option><option value="weiß">weiß</option>
+                </select>
+            </div>
+            <div class="sentence-item">c) Die Sonne ist 
+                <select id="select2c">
+                    <option value="">-- выбери --</option>
+                    <option value="rot">rot</option><option value="blau">blau</option><option value="grün">grün</option>
+                    <option value="schwarz">schwarz</option><option value="gelb">gelb</option><option value="weiß">weiß</option>
+                </select>
+            </div>
+            <div class="sentence-item">d) Der Schnee ist 
+                <select id="select2d">
+                    <option value="">-- выбери --</option>
+                    <option value="rot">rot</option><option value="blau">blau</option><option value="grün">grün</option>
+                    <option value="schwarz">schwarz</option><option value="gelb">gelb</option><option value="weiß">weiß</option>
+                </select>
+            </div>
+            <div class="sentence-item">e) Die Katze ist 
+                <select id="select2e">
+                    <option value="">-- выбери --</option>
+                    <option value="rot">rot</option><option value="blau">blau</option><option value="grün">grün</option>
+                    <option value="schwarz">schwarz</option><option value="gelb">gelb</option><option value="weiß">weiß</option>
+                    <option value="grau">grau</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-answer" id="showSelectAnswers">✨ Показать правильные ответы</button>
+        <div id="selectAnswersBox" class="answer-box"></div>
+    </div>
+
+    <!-- ЗАДАНИЕ 3: Переведи на немецкий -->
+    <div class="task-section">
+        <div class="task-title"><span>3</span> Переведи на немецкий</div>
+        <div class="task-desc">Напиши перевод фраз (используй цвета и глагол «ist»). После этого нажми на кнопку, чтобы проверить.</div>
+        <div id="sentences3">
+            <div class="sentence-item">a) Роза красная. → <input type="text" id="trans3a" class="input-field" placeholder="Твой перевод"></div>
+            <div class="sentence-item">b) Небо синее. → <input type="text" id="trans3b" class="input-field" placeholder="Твой перевод"></div>
+            <div class="sentence-item">c) Трава зелёная. → <input type="text" id="trans3c" class="input-field" placeholder="Твой перевод"></div>
+            <div class="sentence-item">d) Картина разноцветная. → <input type="text" id="trans3d" class="input-field" placeholder="Твой перевод"></div>
+            <div class="sentence-item">e) Мышь серая. → <input type="text" id="trans3e" class="input-field" placeholder="Твой перевод"></div>
+        </div>
+        <button class="btn-answer" id="showTranslateAnswers">🌐 Показать правильные переводы</button>
+        <div id="translateAnswersBox" class="answer-box"></div>
+    </div>
+    <footer>✨ Перетаскивай слова, выбирай цвета, проверяй себя — ответы по клику.</footer>
+</div>
+
+<script>
+    // -------- ЗАДАНИЕ 1: Drag and Drop ----------
+    const dragItems = document.querySelectorAll('.drag-word');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    const resetBtn = document.getElementById('resetDragBtn');
+    const showDragBtn = document.getElementById('showDragAnswers');
+    const dragAnswersBox = document.getElementById('dragAnswersBox');
+
+    // Храним соответствия (drop-zone id / значение)
+    let currentMapping = {
+        'drop-rot': '',
+        'drop-blau': '',
+        'drop-grün': '',
+        'drop-schwarz': '',
+        'drop-gelb': ''
+    };
+    // маппинг цвета -> id зоны
+    const colorToZoneId = {
+        'rot': 'drop-rot',
+        'blau': 'drop-blau',
+        'grün': 'drop-grün',
+        'schwarz': 'drop-schwarz',
+        'gelb': 'drop-gelb'
+    };
+    // Правильные пары (цвет -> правильный перевод)
+    const correctPairs = {
+        'rot': 'красный',
+        'blau': 'синий',
+        'grün': 'зелёный',
+        'schwarz': 'чёрный',
+        'gelb': 'жёлтый'
+    };
+
+    // Функция обновления отображения в drop-зонах
+    function updateDropZones() {
+        for (let zoneId in currentMapping) {
+            const zoneElem = document.getElementById(zoneId);
+            if (zoneElem) {
+                const value = currentMapping[zoneId];
+                zoneElem.textContent = value === '' ? '—' : value;
+            }
+        }
+        // также обновляем визуальное состояние самих слов: если слово уже закреплено, делаем его полупрозрачным и draggable=false
+        dragItems.forEach(item => {
+            const color = item.getAttribute('data-color');
+            const used = Object.values(currentMapping).includes(color);
+            if (used) {
+                item.style.opacity = '0.5';
+                item.setAttribute('draggable', 'false');
+                item.style.cursor = 'default';
+            } else {
+                item.style.opacity = '1';
+                item.setAttribute('draggable', 'true');
+                item.style.cursor = 'grab';
+            }
+        });
+    }
+
+    // Сброс всех сопоставлений
+    function resetDrag() {
+        currentMapping = {
+            'drop-rot': '',
+            'drop-blau': '',
+            'drop-grün': '',
+            'drop-schwarz': '',
+            'drop-gelb': ''
+        };
+        updateDropZones();
+    }
+
+    // Обработчики dragstart
+    dragItems.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            if (this.getAttribute('draggable') !== 'true') {
+                e.preventDefault();
+                return false;
+            }
+            e.dataTransfer.setData('text/plain', this.getAttribute('data-color'));
+            this.classList.add('dragging');
+        });
+        item.addEventListener('dragend', function(e) {
+            this.classList.remove('dragging');
+        });
+    });
+
+    // Обработчики drop-зон
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', function(e) {
+            this.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            const color = e.dataTransfer.getData('text/plain');
+            if (!color) return;
+            // определить, какой drop-zone по переводу
+            const translateText = this.getAttribute('data-translate'); // "зелёный", "чёрный" и т.д.
+            // проверяем, правильное ли сопоставление? Позволяем любой, но подсказка потом
+            // найдем id этой зоны
+            let zoneId = null;
+            for (let id in colorToZoneId) {
+                if (colorToZoneId[id] === this.querySelector('.drop-value')?.id || this.id) {
+                    // проще: у зоны есть child span.drop-value с id
+                    const dropSpan = this.querySelector('.drop-value');
+                    if (dropSpan) zoneId = dropSpan.id;
+                }
+            }
+            if (!zoneId) {
+                // альтернатива: сопоставим по data-translate
+                const mappingByTranslate = {
+                    'зелёный': 'drop-grün',
+                    'чёрный': 'drop-schwarz',
+                    'красный': 'drop-rot',
+                    'жёлтый': 'drop-gelb',
+                    'синий': 'drop-blau'
+                };
+                zoneId = mappingByTranslate[translateText];
+            }
+            if (zoneId && currentMapping[zoneId] === '') {
+                // проверяем, свободен ли этот цвет (не используется ли уже)
+                if (Object.values(currentMapping).includes(color)) {
+                    // цвет уже где-то использован
+                    dragAnswersBox.style.display = 'block';
+                    dragAnswersBox.innerHTML = '<strong>⚠️ Этот цвет уже сопоставлен!</strong> Сначала сбросьте или переместите другой.';
+                    setTimeout(() => { if(dragAnswersBox.style.display === 'block') dragAnswersBox.style.display = 'none'; }, 2000);
+                    return;
+                }
+                currentMapping[zoneId] = color;
+                updateDropZones();
+            }
+        });
+    });
+
+    resetBtn.addEventListener('click', resetDrag);
+    showDragBtn.addEventListener('click', function() {
+        let correctHtml = '<strong>✅ Правильные пары:</strong><br>';
+        for (let [color, translation] of Object.entries(correctPairs)) {
+            let colorRus = '';
+            if (color === 'rot') colorRus = 'красный';
+            else if (color === 'blau') colorRus = 'синий';
+            else if (color === 'grün') colorRus = 'зелёный';
+            else if (color === 'schwarz') colorRus = 'чёрный';
+            else if (color === 'gelb') colorRus = 'жёлтый';
+            correctHtml += `• ${color} → ${colorRus}<br>`;
+        }
+        dragAnswersBox.innerHTML = correctHtml;
+        dragAnswersBox.style.display = 'block';
+    });
+
+    // инициализация
+    resetDrag();
+
+    // -------- ЗАДАНИЕ 2: показ правильных ответов для select ----------
+    const showSelectBtn = document.getElementById('showSelectAnswers');
+    const selectAnswersBox = document.getElementById('selectAnswersBox');
+    showSelectBtn.addEventListener('click', function() {
+        const correctSelections = {
+            select2a: 'blau',    // Himmel blau
+            select2b: 'grün',    // Gras grün
+            select2c: 'gelb',    // Sonne gelb
+            select2d: 'weiß',    // Schnee weiß
+            select2e: 'grau'     // Katze grau (или schwarz, но обычно серая/чёрная. Дадим grau как универсальный)
+        };
+        let answerText = '<strong>📌 Правильные цвета:</strong><br>';
+        answerText += 'a) Der Himmel ist <span class="german-word">blau</span><br>';
+        answerText += 'b) Das Gras ist <span class="german-word">grün</span><br>';
+        answerText += 'c) Die Sonne ist <span class="german-word">gelb</span><br>';
+        answerText += 'd) Der Schnee ist <span class="german-word">weiß</span><br>';
+        answerText += 'e) Die Katze ist <span class="german-word">grau / schwarz / weiß</span> (чаще всего grau)<br>';
+        selectAnswersBox.innerHTML = answerText;
+        selectAnswersBox.style.display = 'block';
+    });
+
+    // -------- ЗАДАНИЕ 3: показ правильных переводов ----------
+    const showTranslateBtn = document.getElementById('showTranslateAnswers');
+    const translateBox = document.getElementById('translateAnswersBox');
+    showTranslateBtn.addEventListener('click', function() {
+        const correctTranslations = {
+            '3a': 'Die Rose ist rot.',
+            '3b': 'Der Himmel ist blau.',
+            '3c': 'Das Gras ist grün.',
+            '3d': 'Das Bild ist bunt.  (или Das Gemälde ist farbenfroh)',
+            '3e': 'Die Maus ist grau.'
+        };
+        let html = '<strong>🌍 Правильные переводы:</strong><br>';
+        html += `a) Роза красная → <span class="german-word">${correctTranslations['3a']}</span><br>`;
+        html += `b) Небо синее → <span class="german-word">${correctTranslations['3b']}</span><br>`;
+        html += `c) Трава зелёная → <span class="german-word">${correctTranslations['3c']}</span><br>`;
+        html += `d) Картина разноцветная → <span class="german-word">${correctTranslations['3d']}</span><br>`;
+        html += `e) Мышь серая → <span class="german-word">${correctTranslations['3e']}</span><br>`;
+        translateBox.innerHTML = html;
+        translateBox.style.display = 'block';
+    });
+
+    // Дополнительно: чтобы ответные блоки можно было скрывать по повторному клику? Оставим как toggle? Для единообразия: по клику на кнопку ответ показывается, но чтобы скрыть, пользователь может кликнуть ещё раз? По условию "ответ появляется только по клику" — сделаем так, что при повторном клике на ту же кнопку ответ скрывается (toggle).
+    function makeToggle(btn, box) {
+        if (!btn || !box) return;
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (box.style.display === 'none' || box.style.display === '') {
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        });
+    }
+    makeToggle(showDragBtn, dragAnswersBox);
+    makeToggle(showSelectBtn, selectAnswersBox);
+    makeToggle(showTranslateBtn, translateBox);
+    
+    // первоначально все ответы скрыты
+    dragAnswersBox.style.display = 'none';
+    selectAnswersBox.style.display = 'none';
+    translateBox.style.display = 'none';
+    
+    // дополнительная мелочь: для задания 2 можно было бы также автоматически не показывать ответы, только по клику — реализовано.
+    // чтобы пользователи могли видеть свои выбранные варианты, select оставлены активными.
+</script>
+</body>
+</html>
