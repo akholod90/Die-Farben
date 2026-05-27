@@ -241,7 +241,7 @@
             border: 1px solid #E5A93D;
             background: white;
             font-size: 0.95rem;
-            width: 180px;
+            width: 220px;
             margin-left: 12px;
         }
         .sentence-item {
@@ -297,7 +297,7 @@
                     <div class="drop-zone" data-translate="синий"><span>5) синий</span><span class="drop-value" id="drop-blau">—</span></div>
                 </div>
                 <button class="reset-drag-btn" id="resetDragBtn">⟳ Сбросить все сопоставления</button>
-                <button class="btn-answer" id="showDragAnswers">📖 Показать правильные пары</button>
+                <button class="btn-answer" id="showDragBtn">📖 Показать правильные пары</button>
                 <div id="dragAnswersBox" class="answer-box"></div>
             </div>
         </div>
@@ -345,7 +345,7 @@
                 </select>
             </div>
         </div>
-        <button class="btn-answer" id="showSelectAnswers">✨ Показать правильные ответы</button>
+        <button class="btn-answer" id="showSelectBtn">✨ Показать правильные ответы</button>
         <div id="selectAnswersBox" class="answer-box"></div>
     </div>
 
@@ -360,7 +360,7 @@
             <div class="sentence-item">d) Картина разноцветная. → <input type="text" id="trans3d" class="input-field" placeholder="Твой перевод"></div>
             <div class="sentence-item">e) Мышь серая. → <input type="text" id="trans3e" class="input-field" placeholder="Твой перевод"></div>
         </div>
-        <button class="btn-answer" id="showTranslateAnswers">🌐 Показать правильные переводы</button>
+        <button class="btn-answer" id="showTranslateBtn">🌐 Показать правильные переводы</button>
         <div id="translateAnswersBox" class="answer-box"></div>
     </div>
     <footer>✨ Перетаскивай слова, выбирай цвета, проверяй себя — ответы по клику.</footer>
@@ -371,10 +371,9 @@
     const dragItems = document.querySelectorAll('.drag-word');
     const dropZones = document.querySelectorAll('.drop-zone');
     const resetBtn = document.getElementById('resetDragBtn');
-    const showDragBtn = document.getElementById('showDragAnswers');
+    const showDragBtn = document.getElementById('showDragBtn');
     const dragAnswersBox = document.getElementById('dragAnswersBox');
 
-    // Храним соответствия (drop-zone id / значение)
     let currentMapping = {
         'drop-rot': '',
         'drop-blau': '',
@@ -382,7 +381,6 @@
         'drop-schwarz': '',
         'drop-gelb': ''
     };
-    // маппинг цвета -> id зоны
     const colorToZoneId = {
         'rot': 'drop-rot',
         'blau': 'drop-blau',
@@ -390,7 +388,6 @@
         'schwarz': 'drop-schwarz',
         'gelb': 'drop-gelb'
     };
-    // Правильные пары (цвет -> правильный перевод)
     const correctPairs = {
         'rot': 'красный',
         'blau': 'синий',
@@ -399,7 +396,6 @@
         'gelb': 'жёлтый'
     };
 
-    // Функция обновления отображения в drop-зонах
     function updateDropZones() {
         for (let zoneId in currentMapping) {
             const zoneElem = document.getElementById(zoneId);
@@ -408,7 +404,6 @@
                 zoneElem.textContent = value === '' ? '—' : value;
             }
         }
-        // также обновляем визуальное состояние самих слов: если слово уже закреплено, делаем его полупрозрачным и draggable=false
         dragItems.forEach(item => {
             const color = item.getAttribute('data-color');
             const used = Object.values(currentMapping).includes(color);
@@ -424,7 +419,6 @@
         });
     }
 
-    // Сброс всех сопоставлений
     function resetDrag() {
         currentMapping = {
             'drop-rot': '',
@@ -436,7 +430,6 @@
         updateDropZones();
     }
 
-    // Обработчики dragstart
     dragItems.forEach(item => {
         item.addEventListener('dragstart', function(e) {
             if (this.getAttribute('draggable') !== 'true') {
@@ -451,7 +444,6 @@
         });
     });
 
-    // Обработчики drop-зон
     dropZones.forEach(zone => {
         zone.addEventListener('dragover', function(e) {
             e.preventDefault();
@@ -465,35 +457,20 @@
             this.classList.remove('drag-over');
             const color = e.dataTransfer.getData('text/plain');
             if (!color) return;
-            // определить, какой drop-zone по переводу
-            const translateText = this.getAttribute('data-translate'); // "зелёный", "чёрный" и т.д.
-            // проверяем, правильное ли сопоставление? Позволяем любой, но подсказка потом
-            // найдем id этой зоны
+            const translateText = this.getAttribute('data-translate');
             let zoneId = null;
-            for (let id in colorToZoneId) {
-                if (colorToZoneId[id] === this.querySelector('.drop-value')?.id || this.id) {
-                    // проще: у зоны есть child span.drop-value с id
-                    const dropSpan = this.querySelector('.drop-value');
-                    if (dropSpan) zoneId = dropSpan.id;
-                }
-            }
-            if (!zoneId) {
-                // альтернатива: сопоставим по data-translate
-                const mappingByTranslate = {
-                    'зелёный': 'drop-grün',
-                    'чёрный': 'drop-schwarz',
-                    'красный': 'drop-rot',
-                    'жёлтый': 'drop-gelb',
-                    'синий': 'drop-blau'
-                };
-                zoneId = mappingByTranslate[translateText];
-            }
+            const mappingByTranslate = {
+                'зелёный': 'drop-grün',
+                'чёрный': 'drop-schwarz',
+                'красный': 'drop-rot',
+                'жёлтый': 'drop-gelb',
+                'синий': 'drop-blau'
+            };
+            zoneId = mappingByTranslate[translateText];
             if (zoneId && currentMapping[zoneId] === '') {
-                // проверяем, свободен ли этот цвет (не используется ли уже)
                 if (Object.values(currentMapping).includes(color)) {
-                    // цвет уже где-то использован
                     dragAnswersBox.style.display = 'block';
-                    dragAnswersBox.innerHTML = '<strong>⚠️ Этот цвет уже сопоставлен!</strong> Сначала сбросьте или переместите другой.';
+                    dragAnswersBox.innerHTML = '<strong>⚠️ Этот цвет уже сопоставлен!</strong> Сначала сбросьте.';
                     setTimeout(() => { if(dragAnswersBox.style.display === 'block') dragAnswersBox.style.display = 'none'; }, 2000);
                     return;
                 }
@@ -504,89 +481,56 @@
     });
 
     resetBtn.addEventListener('click', resetDrag);
-    showDragBtn.addEventListener('click', function() {
-        let correctHtml = '<strong>✅ Правильные пары:</strong><br>';
-        for (let [color, translation] of Object.entries(correctPairs)) {
-            let colorRus = '';
-            if (color === 'rot') colorRus = 'красный';
-            else if (color === 'blau') colorRus = 'синий';
-            else if (color === 'grün') colorRus = 'зелёный';
-            else if (color === 'schwarz') colorRus = 'чёрный';
-            else if (color === 'gelb') colorRus = 'жёлтый';
-            correctHtml += `• ${color} → ${colorRus}<br>`;
-        }
-        dragAnswersBox.innerHTML = correctHtml;
-        dragAnswersBox.style.display = 'block';
-    });
 
-    // инициализация
-    resetDrag();
-
-    // -------- ЗАДАНИЕ 2: показ правильных ответов для select ----------
-    const showSelectBtn = document.getElementById('showSelectAnswers');
-    const selectAnswersBox = document.getElementById('selectAnswersBox');
-    showSelectBtn.addEventListener('click', function() {
-        const correctSelections = {
-            select2a: 'blau',    // Himmel blau
-            select2b: 'grün',    // Gras grün
-            select2c: 'gelb',    // Sonne gelb
-            select2d: 'weiß',    // Schnee weiß
-            select2e: 'grau'     // Katze grau (или schwarz, но обычно серая/чёрная. Дадим grau как универсальный)
-        };
-        let answerText = '<strong>📌 Правильные цвета:</strong><br>';
-        answerText += 'a) Der Himmel ist <span class="german-word">blau</span><br>';
-        answerText += 'b) Das Gras ist <span class="german-word">grün</span><br>';
-        answerText += 'c) Die Sonne ist <span class="german-word">gelb</span><br>';
-        answerText += 'd) Der Schnee ist <span class="german-word">weiß</span><br>';
-        answerText += 'e) Die Katze ist <span class="german-word">grau / schwarz / weiß</span> (чаще всего grau)<br>';
-        selectAnswersBox.innerHTML = answerText;
-        selectAnswersBox.style.display = 'block';
-    });
-
-    // -------- ЗАДАНИЕ 3: показ правильных переводов ----------
-    const showTranslateBtn = document.getElementById('showTranslateAnswers');
-    const translateBox = document.getElementById('translateAnswersBox');
-    showTranslateBtn.addEventListener('click', function() {
-        const correctTranslations = {
-            '3a': 'Die Rose ist rot.',
-            '3b': 'Der Himmel ist blau.',
-            '3c': 'Das Gras ist grün.',
-            '3d': 'Das Bild ist bunt.  (или Das Gemälde ist farbenfroh)',
-            '3e': 'Die Maus ist grau.'
-        };
-        let html = '<strong>🌍 Правильные переводы:</strong><br>';
-        html += `a) Роза красная → <span class="german-word">${correctTranslations['3a']}</span><br>`;
-        html += `b) Небо синее → <span class="german-word">${correctTranslations['3b']}</span><br>`;
-        html += `c) Трава зелёная → <span class="german-word">${correctTranslations['3c']}</span><br>`;
-        html += `d) Картина разноцветная → <span class="german-word">${correctTranslations['3d']}</span><br>`;
-        html += `e) Мышь серая → <span class="german-word">${correctTranslations['3e']}</span><br>`;
-        translateBox.innerHTML = html;
-        translateBox.style.display = 'block';
-    });
-
-    // Дополнительно: чтобы ответные блоки можно было скрывать по повторному клику? Оставим как toggle? Для единообразия: по клику на кнопку ответ показывается, но чтобы скрыть, пользователь может кликнуть ещё раз? По условию "ответ появляется только по клику" — сделаем так, что при повторном клике на ту же кнопку ответ скрывается (toggle).
-    function makeToggle(btn, box) {
-        if (!btn || !box) return;
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (box.style.display === 'none' || box.style.display === '') {
-                box.style.display = 'block';
+    // -------- Функция для кнопки показа ответов (toggle + заполнение контента) --------
+    function setupToggleButton(button, answerBox, contentGenerator) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (answerBox.style.display === 'none' || answerBox.style.display === '') {
+                answerBox.innerHTML = contentGenerator();
+                answerBox.style.display = 'block';
             } else {
-                box.style.display = 'none';
+                answerBox.style.display = 'none';
             }
         });
     }
-    makeToggle(showDragBtn, dragAnswersBox);
-    makeToggle(showSelectBtn, selectAnswersBox);
-    makeToggle(showTranslateBtn, translateBox);
-    
-    // первоначально все ответы скрыты
+
+    // Генератор для задания 1
+    function dragAnswersContent() {
+        let html = '<strong>✅ Правильные пары:</strong><br>';
+        for (let [color, translation] of Object.entries(correctPairs)) {
+            html += `• ${color} → ${translation}<br>`;
+        }
+        return html;
+    }
+    // Генератор для задания 2
+    function selectAnswersContent() {
+        return `<strong>📌 Правильные цвета:</strong><br>
+                a) Der Himmel ist <span class="german-word">blau</span><br>
+                b) Das Gras ist <span class="german-word">grün</span><br>
+                c) Die Sonne ist <span class="german-word">gelb</span><br>
+                d) Der Schnee ist <span class="german-word">weiß</span><br>
+                e) Die Katze ist <span class="german-word">grau / schwarz / weiß</span> (чаще всего grau)`;
+    }
+    // Генератор для задания 3
+    function translateAnswersContent() {
+        return `<strong>🌍 Правильные переводы:</strong><br>
+                a) Роза красная → <span class="german-word">Die Rose ist rot.</span><br>
+                b) Небо синее → <span class="german-word">Der Himmel ist blau.</span><br>
+                c) Трава зелёная → <span class="german-word">Das Gras ist grün.</span><br>
+                d) Картина разноцветная → <span class="german-word">Das Bild ist bunt. (или Das Gemälde ist farbenfroh)</span><br>
+                e) Мышь серая → <span class="german-word">Die Maus ist grau.</span>`;
+    }
+
+    setupToggleButton(showDragBtn, dragAnswersBox, dragAnswersContent);
+    setupToggleButton(document.getElementById('showSelectBtn'), document.getElementById('selectAnswersBox'), selectAnswersContent);
+    setupToggleButton(document.getElementById('showTranslateBtn'), document.getElementById('translateAnswersBox'), translateAnswersContent);
+
+    // Инициализация: все ответы скрыты
     dragAnswersBox.style.display = 'none';
-    selectAnswersBox.style.display = 'none';
-    translateBox.style.display = 'none';
-    
-    // дополнительная мелочь: для задания 2 можно было бы также автоматически не показывать ответы, только по клику — реализовано.
-    // чтобы пользователи могли видеть свои выбранные варианты, select оставлены активными.
+    document.getElementById('selectAnswersBox').style.display = 'none';
+    document.getElementById('translateAnswersBox').style.display = 'none';
+    resetDrag();
 </script>
 </body>
 </html>
